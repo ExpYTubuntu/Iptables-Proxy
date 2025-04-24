@@ -9,13 +9,13 @@ If anyone has any improvements I could make to the proxy to run better, please l
 1. **If you can log in as `root`:**
 
    ```bash
-   bash <(curl -fsSL https://raw.githubusercontent.com/ExpYTubuntu/Iptables-Proxy/main/proxy.sh)
+   bash <(curl -fsSL https://raw.githubusercontent.com/exphost-net/Iptables-Proxy/main/proxy.sh)
    ```
 
 2. **If you need `sudo`:**
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/ExpYTubuntu/Iptables-Proxy/main/proxy.sh | sudo bash
+   curl -fsSL https://raw.githubusercontent.com/exphost-net/Iptables-Proxy/main/proxy.sh | sudo bash
    ```
 
 ---
