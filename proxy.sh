@@ -1,34 +1,37 @@
-set -euo pipefail
+#!/bin/bash
 
-read -rp "Proxy (external) IP to SNAT to: " PROXY_IP
-read -rp "Node (internal) IP to DNAT to: " NODE_IP
-read -rp "Port or port range(s) to forward (e.g. 8080,2022,25565:25664): " PORTS
+# Ask for input values
+read -p "Proxy (external) IP to SNAT to: " proxy_ip
+read -p "Node (internal) IP to DNAT to: " node_ip
+read -p "Port or port range(s) to forward (e.g. 8080,2022,25565:25664): " ports
 
-add_rules() {
-  local proto=$1
-  local port_spec=$2
+# Apply iptables rules
+for port in $(echo $ports | tr ',' '\n'); do
+    # Forward TCP and UDP ports
+    sudo iptables -t nat -A PREROUTING -p tcp --dport $port -j DNAT --to-destination $node_ip
+    sudo iptables -t nat -A PREROUTING -p udp --dport $port -j DNAT --to-destination $node_ip
+    sudo iptables -t nat -A POSTROUTING -p tcp -d $node_ip --dport $port -j SNAT --to-source $proxy_ip
+    sudo iptables -t nat -A POSTROUTING -p udp -d $node_ip --dport $port -j SNAT --to-source $proxy_ip
 
-  sudo iptables -t nat -A PREROUTING -p "$proto" --dport "$port_spec" \
-    -j DNAT --to-destination "$NODE_IP"
-  sudo iptables -t nat -A POSTROUTING -p "$proto" -d "$NODE_IP" --dport "$port_spec" \
-    -j SNAT --to-source "$PROXY_IP"
-}
-
-IFS=',' read -r -a PORT_ARRAY <<< "$PORTS"
-
-for PORT_SPEC in "${PORT_ARRAY[@]}"; do
-  echo "Forwarding TCP port(s) $PORT_SPEC → $NODE_IP  SNAT via $PROXY_IP"
-  add_rules tcp "$PORT_SPEC"
-  echo "Forwarding UDP port(s) $PORT_SPEC → $NODE_IP  SNAT via $PROXY_IP"
-  add_rules udp "$PORT_SPEC"
+    echo "Forwarding TCP port(s) $port → $node_ip  SNAT via $proxy_ip"
+    echo "Forwarding UDP port(s) $port → $node_ip  SNAT via $proxy_ip"
 done
 
 echo "All rules applied."
 
+# Check if iptables-legacy is available and use it if present
 if command -v iptables-legacy-save &> /dev/null; then
     iptables-legacy-save > /etc/iptables/rules.v4
     echo "Rules saved using iptables-legacy-save."
 else
     iptables-save > /etc/iptables/rules.v4
     echo "Rules saved using iptables-save."
+fi
+
+# List all the current iptables rules
+echo "Listing current iptables rules:"
+if command -v iptables-legacy &> /dev/null; then
+    sudo iptables-legacy -L -n -v
+else
+    sudo iptables -L -n -v
 fi
