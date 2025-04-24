@@ -1,5 +1,42 @@
 #!/bin/bash
 
+# Ask if the user wants to delete all iptables rules
+read -p "Would you like to delete all iptables rules first? (yes/no) [default: no]: " delete_rules
+delete_rules=${delete_rules:-no}
+
+# Delete all iptables rules if the user chooses "yes"
+if [[ "$delete_rules" == "yes" ]]; then
+    echo "Deleting all iptables rules..."
+    
+    # Reset using iptables-legacy
+    if command -v iptables-legacy &> /dev/null; then
+        sudo iptables-legacy -F
+        sudo iptables-legacy -t nat -F
+        sudo iptables-legacy -t mangle -F
+        sudo iptables-legacy -X
+        sudo iptables-legacy -P INPUT ACCEPT
+        sudo iptables-legacy -P FORWARD ACCEPT
+        sudo iptables-legacy -P OUTPUT ACCEPT
+        sudo iptables-legacy-save > /etc/iptables/rules.v4
+        echo "iptables-legacy rules reset and saved."
+    fi
+    
+    # Reset using iptables
+    if command -v iptables &> /dev/null; then
+        sudo iptables -F
+        sudo iptables -t nat -F
+        sudo iptables -t mangle -F
+        sudo iptables -X
+        sudo iptables -P INPUT ACCEPT
+        sudo iptables -P FORWARD ACCEPT
+        sudo iptables -P OUTPUT ACCEPT
+        sudo iptables-save > /etc/iptables/rules.v4
+        echo "iptables rules reset and saved."
+    fi
+
+    echo "All iptables rules have been deleted."
+fi
+
 # Ask for input values
 read -p "Proxy (external) IP to SNAT to: " proxy_ip
 read -p "Node (internal) IP to DNAT to: " node_ip
