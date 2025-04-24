@@ -25,11 +25,10 @@ done
 
 echo "All rules applied."
 
-if sudo iptables-save > /etc/iptables/rules.v4; then
-  echo "Rules saved to /etc/iptables/rules.v4 using iptables-save."
-elif sudo iptables-legacy-save > /etc/iptables/rules.v4; then
-  echo "Rules saved to /etc/iptables/rules.v4 using iptables-legacy-save."
+if command -v iptables-legacy-save &> /dev/null; then
+    iptables-legacy-save > /etc/iptables/rules.v4
+    echo "Rules saved using iptables-legacy-save."
 else
-  echo "Error: could not save iptables rules with either iptables-save or iptables-legacy-save." >&2
-  exit 1
+    iptables-save > /etc/iptables/rules.v4
+    echo "Rules saved using iptables-save."
 fi
