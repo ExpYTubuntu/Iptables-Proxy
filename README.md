@@ -1,4 +1,3 @@
-```markdown
 # Iptables‑Proxy
 
 Simple script to forward ports via DNAT/SNAT on Ubuntu.
