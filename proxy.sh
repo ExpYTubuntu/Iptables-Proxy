@@ -28,10 +28,6 @@ else
     echo "Rules saved using iptables-save."
 fi
 
-# List all the current iptables rules
+# List all the current iptables rules in the nat table
 echo "Listing current iptables rules in the nat table:"
-if command -v iptables-legacy &> /dev/null; then
-    sudo iptables-legacy -t nat -L -v -n
-else
-    sudo iptables -t nat -L -v -n
-fi
+sudo iptables -t nat -L -v -n
