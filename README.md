@@ -1,12 +1,8 @@
-Here's the updated README with your requested changes:
-
----
-
 # Iptables‑Proxy
 
 Simple script to forward ports via DNAT/SNAT on Ubuntu.
 
-If anyone has any improvements I could make to the proxy to run better, please let me know through Discord.
+If anyone has any improvements I could make to the proxy to run better, please let me (Exp) know through Discord.
 
 ## Usage
 
