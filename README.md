@@ -32,8 +32,3 @@ Simple script to forward ports via DNAT/SNAT on Ubuntu.
   - Falls back to `iptables-legacy-save` if needed
 
 ---
-
-### License
-
-MIT  
-```
